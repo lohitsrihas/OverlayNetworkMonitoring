@@ -1,2 +1,15 @@
 # OverlayNetworkMonitoring
 Tool developed to be used by a server to monitor performance characteristics (like Bandwidth, CPU Utilization) of user nodes through Python Script and REST API
+
+The distributed applications require detailed QoS measurements in  order to adapt themselvs to the network conditions and offer a good user experience. Currently, the network measurements are performed individually for each of their applications. Also, the means to access measurement data is specific to each application. It difficult to maintain and update few applications. 
+
+The networking monitoring system consists of an admin server and three peering nodes(could be more). The admin server is used for authentication, for keeping track of registered nodes and for storing historical data. Each node obtains the list of registered nodes from the admin server and establishes an HTTP(at present) connection to the remaining nodes. As a result, the nodes create a full mesh overlay. The nodes use the established connections to periodically (e.g., every 10 seconds) estimate the connection bandwidth and the round-trip time (RTT) over that connection. The nodes also monitor their own CPU utilization, system load, free and used memory as well as disk I/O.
+
+After each measurement, every node sends the measurement data to the admin server database. After saving the reported data, the admin server then performs data aggregation. For each data type reported by a specific node, the samples will be aggregated to one minute and one hour samples respectively, so that a single value gives a fair view of what happened in the interval (during one minute, or one hour). The result is that the admin server stores three data streams for each data type reported by a particular node: the original 10-second samples, the 1-minute samples and the 1-hour samples. 
+
+The admin server logs all events to the syslog facility. The admin server is preconfigured with a default admin account. The admin account allows the creation of regular user accounts. A regular user can view the collected data but cannot make any changes to the system. After succesfull authentication, the user will be able to select three options: log out, edit account, and view statistics. The log out option is used to prevent unauthorized users from accessing the system after current user leaves the system. The edit account option allow the user to edit his/her account details, including changing the password. If the view statistics option is chosen, the user will be able to view the monitored data types of the global view (the aggregated data). At that point three time-series graphs are shown: one showing the last 600 seconds using the 10-seconds data stream, one showing the last 60 minutes using the 1-minute stream and a third graph showing the last 60 hours using the 1-hour stream. The graphs update dynamically as new samples come in from the nodes.
+
+Finally, all interaction i.e. user-to-admin server and node-to-admin server are based on a RESTful API.
+
+
+Instructions for running the API are given in the 'User Document' in 'docs' folder.
